@@ -75,13 +75,13 @@ def declare_variables(n):
        [[]]
           an empty mapping associating each literal to the clauses it appears in
     """
-    litToClauses = [[] for i in range(2*n+2)]
+    lit_to_clauses = [[] for i in range(2*n+2)]
     print("\\node (v1) at (0, 0) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};")
     print("\\node[below = 0 of v1] () {v1};")
     for i in range(2,n+1):
         print("\\node[right = of v%d]  (v%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i-1,i))
         print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
-    return litToClauses
+    return lit_to_clauses
 
 def declare_clauses(m):
     """
@@ -97,7 +97,7 @@ def declare_clauses(m):
         print("\\node[right = of c%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i-1,i))
 
 
-def handle_clause(clause,i,litToClauses):
+def handle_clause(clause,i,lit_to_clauses):
     """
        Connect the switches to the lights
 
@@ -105,14 +105,34 @@ def handle_clause(clause,i,litToClauses):
     for s in clause.split():
         l = int(s)
         if (l !=0):
-            litToClauses[dimacs2index(l)].append(i)
+            lit_to_clauses[dimacs2index(l)].append(i)
             if (l>0):
                 print("\\draw (c%d.south) edge[bend left] (v%d.east);" % (i,l))
             else:
                 assert l<0
                 print("\\draw (c%d.south) edge[bend right] (v%d.west);" % (i,-l))
             
-def wait_for_solution(m,litToClauses):
+def handle_solution_line(line,i):
+    """
+        Translate a solution line into corresponding switch position and light status.
+
+    """
+    satisfied_clauses = set()
+    for s in line.split()[1:]:
+        l = int(s)
+        if (l !=0):
+            satisfied_clauses.update(lit_to_clauses[dimacs2index(l)])
+            if (l>0): 
+                print("\\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchon}}} ;" % (l,i))
+            else: 
+                assert l<0
+                print("\\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchoff}}} ;" % (-l,i))
+    for c in satisfied_clauses:
+        print("\\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lighton}}} ;" % (c,i))
+    for c in set(range(1,m+1)).difference(satisfied_clauses):
+        print("\\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lightoff}}} ;" % (c,i))
+
+def wait_for_solution(m,lit_to_clauses):
     """
         Reads an assignment from a SAT solver on stdin and position the switches accordingly.
 
@@ -122,20 +142,7 @@ def wait_for_solution(m,litToClauses):
     i = 2
     for line in sys.stdin:
         if (line.startswith("v ")): 
-            satisfiedclauses = set()
-            for s in line.split()[1:]:
-                l = int(s)
-                if (l !=0):
-                    satisfiedclauses.update(litToClauses[dimacs2index(l)])
-                    if (l>0): 
-                        print("\\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchon}}} ;" % (l,i))
-                    else: 
-                        assert l<0
-                        print("\\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchoff}}} ;" % (-l,i))
-            for c in satisfiedclauses:
-                print("\\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lighton}}} ;" % (c,i))
-            for c in set(range(1,m+1)).difference(satisfiedclauses):
-                print("\\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lightoff}}} ;" % (c,i))
+            handle_solution_line(line,i)
             i += 1
 
 if (len(sys.argv)!=2):
@@ -156,15 +163,15 @@ n = int(header[2])
 m = int(header[3])
 
 latex_header()
-litToClauses = declare_variables(n)
+lit_to_clauses = declare_variables(n)
 declare_clauses(m)
 
 i=1
 for line in dimacs:
-    handle_clause(line,i,litToClauses)
+    handle_clause(line,i,lit_to_clauses)
     i += 1
 dimacs.close
 
-wait_for_solution(m,litToClauses)
+wait_for_solution(m,lit_to_clauses)
 
 latex_footer()
