@@ -102,20 +102,23 @@ def handle_clause(clause,i,lit_to_clauses):
         l = int(s)
         if (l !=0):
             lit_to_clauses[dimacs2index(l)].append(i)
-            if (l>0):
-                if (l + 1 < i) :
-                    side = "right"
-                else :
-                    side = "left"
-                print("        \\draw (c%d.south) edge[bend %s] (v%d.east);" % (i,side,l))
-            else:
-                assert l<0
-                if (-l > i + 2) :
-                    side = "left" 
-                else : 
-                    side = "right"
-                print("        \\draw (c%d.south) edge[bend %s] (v%d.west);" % (i,side,-l))
-            
+            link_literal_to_clause(l,i)
+
+def link_literal_to_clause(l,i):
+    if (l>0):
+        if (l + 1 < i) :
+            side = "right"
+        else :
+            side = "left"
+        print("        \\draw (c%d.south) edge[bend %s] (v%d.east);" % (i,side,l))
+    else:
+        assert l<0
+        if (-l > i + 2) :
+            side = "left" 
+        else : 
+            side = "right"
+        print("        \\draw (c%d.south) edge[bend %s] (v%d.west);" % (i,side,-l))
+
 def handle_solution_line(line,i):
     """
         Translate a solution line into corresponding switch position and light status.
