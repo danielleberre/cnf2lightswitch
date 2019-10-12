@@ -69,13 +69,7 @@ def declare_variables(n):
        -----------
        n: int
           the total number of variables
-
-       Returns:
-       --------
-       [[]]
-          an empty mapping associating each literal to the clauses it appears in
     """
-    lit_to_clauses = [[] for i in range(2*n+2)]
     for i in range(1,n+1):
         if (i % 5 == 1):
             print("\\node (v%d) at (0, %d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i,(-i/5)*3))
@@ -83,7 +77,6 @@ def declare_variables(n):
         else:
             print("\\node[right = of v%d]  (v%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i-1,i))
             print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
-    return lit_to_clauses
 
 def declare_clauses(m):
     """
@@ -167,8 +160,10 @@ n = int(header[2])
 m = int(header[3])
 
 latex_header()
-lit_to_clauses = declare_variables(n)
+declare_variables(n)
 declare_clauses(m)
+
+lit_to_clauses = [[] for i in range(2*n+2)]
 
 i=1
 for line in dimacs:
