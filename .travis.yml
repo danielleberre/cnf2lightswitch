@@ -1,0 +1,9 @@
+language: python
+script:
+- sonar-scanner
+
+addons:
+  sonarcloud:
+    organization: "danielleberre-github"
+    token:
+      secure: $MYSONARTOKEN
