@@ -103,10 +103,18 @@ def handle_clause(clause,i,lit_to_clauses):
         if (l !=0):
             lit_to_clauses[dimacs2index(l)].append(i)
             if (l>0):
-                print("\\draw (c%d.south) edge[bend left] (v%d.east);" % (i,l))
+                if (l + 1 < i) :
+                    side = "right"
+                else :
+                    side = "left"
+                print("\\draw (c%d.south) edge[bend %s] (v%d.east);" % (i,side,l))
             else:
                 assert l<0
-                print("\\draw (c%d.south) edge[bend right] (v%d.west);" % (i,-l))
+                if (-l > i + 2) :
+                    side = "left" 
+                else : 
+                    side = "right"
+                print("\\draw (c%d.south) edge[bend %s] (v%d.west);" % (i,side,-l))
             
 def handle_solution_line(line,i):
     """
