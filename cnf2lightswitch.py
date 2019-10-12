@@ -42,7 +42,7 @@ def dimacs2index(d):
     
     return (-d*2)+1
 
-def latex_header():
+def latex_header(scale):
     """
        Print latex, beamer and tikz header
     """
@@ -51,13 +51,15 @@ def latex_header():
     print("\\usetikzlibrary{positioning, fit}")
     print("\\begin{document}")
     print("\\begin{frame}")
-    print("\\begin{tikzpicture}[scale=0.5]")
+    print("\\scalebox{%.2f}{" % scale)
+    print("\\begin{tikzpicture}")
 
 def latex_footer():
     """
        Print latex, beamer and tikz footer
     """
     print("\end{tikzpicture}")
+    print("}")
     print("\end{frame}")
     print("\end{document}")
 
@@ -70,11 +72,10 @@ def declare_variables(n):
        n: int
           the total number of variables
     """
-    for i in range(1,n+1):
-        if (i % 5 == 1):
-            print("\\node (v%d) at (0, %d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i,(-i/5)*3))
-            print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
-        else:
+    print("\n% variables");
+    print("\\node (v%d) at (0, %d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (1,0))
+    print("\\node[below = 0 of v%d] () {v%d};" % (1,1))
+    for i in range(2,n+1):
             print("\\node[right = of v%d]  (v%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i-1,i))
             print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
 
@@ -87,12 +88,10 @@ def declare_clauses(m):
        m: int
           the total number of clauses
     """
-    for i in range(1,m+1):
-        if (i % 5 ==1):
-            print("\\node (c%d) at (0,%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i,(i/5)*3+4))
-        else:
+    print("\n% clauses");
+    print("\\node[above = 3 of v%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (1,1))
+    for i in range(2,m+1):
             print("\\node[right = of c%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i-1,i))
-
 
 def handle_clause(clause,i,lit_to_clauses):
     """
@@ -158,8 +157,12 @@ assert line.startswith("p cnf")
 header = line.split()
 n = int(header[2])
 m = int(header[3])
+if (n <= 5 and m <= 5) :
+    scale = 1.
+else :
+    scale = 5./max(n,m)
 
-latex_header()
+latex_header(scale)
 declare_variables(n)
 declare_clauses(m)
 
