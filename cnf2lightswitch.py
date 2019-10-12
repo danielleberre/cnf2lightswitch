@@ -42,7 +42,7 @@ def dimacs2index(d):
     
     return (-d*2)+1
 
-def latexHeader():
+def latex_header():
     """
        Print latex, beamer and tikz header
     """
@@ -53,7 +53,7 @@ def latexHeader():
     print("\\begin{frame}")
     print("\\begin{tikzpicture}[scale=0.5]")
 
-def latexFooter():
+def latex_footer():
     """
        Print latex, beamer and tikz footer
     """
@@ -61,7 +61,7 @@ def latexFooter():
     print("\end{frame}")
     print("\end{document}")
 
-def declareVariables(n):
+def declare_variables(n):
     """
        Generate unactivated switches 
        
@@ -83,7 +83,7 @@ def declareVariables(n):
         print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
     return litToClauses
 
-def declareClauses(m):
+def declare_clauses(m):
     """
        Generate lights off
        
@@ -97,7 +97,7 @@ def declareClauses(m):
         print("\\node[right = of c%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i-1,i))
 
 
-def handleClause(clause,i,litToClauses):
+def handle_clause(clause,i,litToClauses):
     """
        Connect the switches to the lights
 
@@ -112,7 +112,7 @@ def handleClause(clause,i,litToClauses):
                 assert l<0
                 print("\\draw (c%d.south) edge[bend right] (v%d.west);" % (i,-l))
             
-def waitForSolution(m,litToClauses):
+def wait_for_solution(m,litToClauses):
     """
         Reads an assignment from a SAT solver on stdin and position the switches accordingly.
 
@@ -155,16 +155,16 @@ header = line.split()
 n = int(header[2])
 m = int(header[3])
 
-latexHeader()
-litToClauses = declareVariables(n)
-declareClauses(m)
+latex_header()
+litToClauses = declare_variables(n)
+declare_clauses(m)
 
 i=1
 for line in dimacs:
-    handleClause(line,i,litToClauses)
+    handle_clause(line,i,litToClauses)
     i += 1
 dimacs.close
 
-waitForSolution(m,litToClauses)
+wait_for_solution(m,litToClauses)
 
-latexFooter()
+latex_footer()
