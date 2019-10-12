@@ -21,9 +21,9 @@ The command `solver sat.cnf | ./cnf2lightswitch.py sat.cnf` generates the tex fi
 
 ![](sat-2.png)
 
-Using Sat4j, it is possible to generate all satisfying assignment.
+Using [Sat4j](www.sat4j.org), it is possible to generate all satisfying assignment.
 
-`java -Dall -Dprintallmodels -jar lib/org.sat4j.core.jar sat.cnf | ./immeuble.py sat.cnf`
+`java -Dall -Dprintallmodels -jar lib/org.sat4j.core.jar sat.cnf | ./cnf2lightswitch.py sat.cnf`
 
 
 This script follows the description of the SAT problem as a light and switch problem
