@@ -28,7 +28,8 @@ Using [Sat4j](www.sat4j.org), it is possible to generate all satisfying assignme
 
 `java -Dall -Dprintallmodels -jar lib/org.sat4j.core.jar sat.cnf | ./cnf2lightswitch.py sat.cnf`
 
-The script allows to display problems with up to 10 variables and clauses.
+The script allows to display problems with up to 10 variables and clauses. It scales the
+elements accordingly.
 
 ![](test.png)
 
