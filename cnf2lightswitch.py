@@ -139,7 +139,7 @@ def wait_for_solution(m,litToClauses):
             i += 1
 
 if (len(sys.argv)!=2):
-    print("Usage: ./cnf2lightswitch.py file.cnf ")
+    print("Usage: ./cnf2lightswitch.py file.cnf </dev/null")
     print("       solver file.cnf | ./cnf2lightswitch.py file.cnf ")
     sys.exit(1)
     

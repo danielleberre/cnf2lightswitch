@@ -11,7 +11,7 @@ p cnf 3 2
 -2 3 0
 ```
 
-The command `./cnf2lightswitch.py sat.cnf` generates the tex file to produce the picture
+The command `./cnf2lightswitch.py sat.cnf </dev/null` generates the tex file to produce the picture
 
 ![](sat-1.png)
 
