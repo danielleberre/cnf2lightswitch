@@ -76,11 +76,13 @@ def declare_variables(n):
           an empty mapping associating each literal to the clauses it appears in
     """
     lit_to_clauses = [[] for i in range(2*n+2)]
-    print("\\node (v1) at (0, 0) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};")
-    print("\\node[below = 0 of v1] () {v1};")
-    for i in range(2,n+1):
-        print("\\node[right = of v%d]  (v%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i-1,i))
-        print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
+    for i in range(1,n+1):
+        if (i % 5 == 1):
+            print("\\node (v%d) at (0, %d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i,(-i/5)*3))
+            print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
+        else:
+            print("\\node[right = of v%d]  (v%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i-1,i))
+            print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
     return lit_to_clauses
 
 def declare_clauses(m):
@@ -92,9 +94,11 @@ def declare_clauses(m):
        m: int
           the total number of clauses
     """
-    print("\\node[above = 2cm of v1] (c1) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};")
-    for i in range(2,m+1):
-        print("\\node[right = of c%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i-1,i))
+    for i in range(1,m+1):
+        if (i % 5 ==1):
+            print("\\node (c%d) at (0,%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i,(i/5)*3+4))
+        else:
+            print("\\node[right = of c%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i-1,i))
 
 
 def handle_clause(clause,i,lit_to_clauses):

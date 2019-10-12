@@ -28,6 +28,9 @@ Using [Sat4j](www.sat4j.org), it is possible to generate all satisfying assignme
 
 `java -Dall -Dprintallmodels -jar lib/org.sat4j.core.jar sat.cnf | ./cnf2lightswitch.py sat.cnf`
 
+The script allows to display problems with up to 10 variables and clauses.
+
+![](test.png)
 
 This script follows the description of the SAT problem as a light and switch problem
 in [this interview](https://www.lemonde.fr/blog/binaire/2019/10/04/ils-ne-savaient-pas-que-cetait-insoluble-alors-ils-lont-resolu/) and the presentation
