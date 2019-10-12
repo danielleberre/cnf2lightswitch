@@ -42,23 +42,25 @@ def dimacs2index(d):
     
     return (-d*2)+1
 
-def latex_header():
+def latex_header(scale):
     """
        Print latex, beamer and tikz header
     """
     print("\documentclass{beamer}")
     print("\\usepackage{pgf, tikz}")
-    print("\\usetikzlibrary{positioning, fit}")
+    print("\\usetikzlibrary{positioning}")
     print("\\begin{document}")
-    print("\\begin{frame}")
-    print("\\begin{tikzpicture}[scale=0.5]")
+    print("  \\begin{frame}")
+    print("    \\scalebox{%.2f}{" % scale)
+    print("      \\begin{tikzpicture}")
 
 def latex_footer():
     """
        Print latex, beamer and tikz footer
     """
-    print("\end{tikzpicture}")
-    print("\end{frame}")
+    print("      \end{tikzpicture}")
+    print("    }")
+    print("  \end{frame}")
     print("\end{document}")
 
 def declare_variables(n):
@@ -70,13 +72,12 @@ def declare_variables(n):
        n: int
           the total number of variables
     """
-    for i in range(1,n+1):
-        if (i % 5 == 1):
-            print("\\node (v%d) at (0, %d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i,(-i/5)*3))
-            print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
-        else:
-            print("\\node[right = of v%d]  (v%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i-1,i))
-            print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
+    print("\n        % variables");
+    print("        \\node (v%d) at (0, %d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (1,0))
+    print("        \\node[below = 0 of v%d] () {v%d};" % (1,1))
+    for i in range(2,n+1):
+        print("        \\node[right = of v%d]  (v%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i-1,i))
+        print("        \\node[below = 0 of v%d] () {v%d};" % (i,i))
 
 def declare_clauses(m):
     """
@@ -87,12 +88,10 @@ def declare_clauses(m):
        m: int
           the total number of clauses
     """
-    for i in range(1,m+1):
-        if (i % 5 ==1):
-            print("\\node (c%d) at (0,%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i,(i/5)*3+4))
-        else:
-            print("\\node[right = of c%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i-1,i))
-
+    print("\n        % clauses");
+    print("        \\node[above = 3 of v%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (1,1))
+    for i in range(2,m+1):
+        print("        \\node[right = of c%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i-1,i))
 
 def handle_clause(clause,i,lit_to_clauses):
     """
@@ -104,10 +103,18 @@ def handle_clause(clause,i,lit_to_clauses):
         if (l !=0):
             lit_to_clauses[dimacs2index(l)].append(i)
             if (l>0):
-                print("\\draw (c%d.south) edge[bend left] (v%d.east);" % (i,l))
+                if (l + 1 < i) :
+                    side = "right"
+                else :
+                    side = "left"
+                print("        \\draw (c%d.south) edge[bend %s] (v%d.east);" % (i,side,l))
             else:
                 assert l<0
-                print("\\draw (c%d.south) edge[bend right] (v%d.west);" % (i,-l))
+                if (-l > i + 2) :
+                    side = "left" 
+                else : 
+                    side = "right"
+                print("        \\draw (c%d.south) edge[bend %s] (v%d.west);" % (i,side,-l))
             
 def handle_solution_line(line,i):
     """
@@ -115,19 +122,20 @@ def handle_solution_line(line,i):
 
     """
     satisfied_clauses = set()
+    print("\n        % solution");
     for s in line.split()[1:]:
         l = int(s)
         if (l !=0):
             satisfied_clauses.update(lit_to_clauses[dimacs2index(l)])
             if (l>0): 
-                print("\\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchon}}} ;" % (l,i))
+                print("        \\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchon}}} ;" % (l,i))
             else: 
                 assert l<0
-                print("\\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchoff}}} ;" % (-l,i))
+                print("        \\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchoff}}} ;" % (-l,i))
     for c in satisfied_clauses:
-        print("\\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lighton}}} ;" % (c,i))
+        print("        \\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lighton}}} ;" % (c,i))
     for c in set(range(1,m+1)).difference(satisfied_clauses):
-        print("\\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lightoff}}} ;" % (c,i))
+        print("        \\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lightoff}}} ;" % (c,i))
 
 def wait_for_solution(m,lit_to_clauses):
     """
@@ -158,8 +166,12 @@ assert line.startswith("p cnf")
 header = line.split()
 n = int(header[2])
 m = int(header[3])
+if (n <= 5 and m <= 5) :
+    scale = 1.
+else :
+    scale = 5./max(n,m)
 
-latex_header()
+latex_header(scale)
 declare_variables(n)
 declare_clauses(m)
 
