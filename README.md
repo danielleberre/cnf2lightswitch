@@ -1,5 +1,8 @@
 # CNF to light and switch generator
 
+[![Build Status](https://travis-ci.org/danielleberre/cnf2lightswitch.svg?branch=master)](https://travis-ci.org/danielleberre/cnf2lightswitch)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=dlb%3Acnf2lightandswitch&metric=alert_status)](https://sonarcloud.io/dashboard?id=dlb%3Acnf2lightandswitch)
+
 Small utility script to translate small Dimacs formatted CNF files into
 light and switch picture in tikz.
 
