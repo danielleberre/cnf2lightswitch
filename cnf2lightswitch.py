@@ -48,19 +48,19 @@ def latex_header(scale):
     """
     print("\documentclass{beamer}")
     print("\\usepackage{pgf, tikz}")
-    print("\\usetikzlibrary{positioning, fit}")
+    print("\\usetikzlibrary{positioning}")
     print("\\begin{document}")
-    print("\\begin{frame}")
-    print("\\scalebox{%.2f}{" % scale)
-    print("\\begin{tikzpicture}")
+    print("  \\begin{frame}")
+    print("    \\scalebox{%.2f}{" % scale)
+    print("      \\begin{tikzpicture}")
 
 def latex_footer():
     """
        Print latex, beamer and tikz footer
     """
-    print("\end{tikzpicture}")
-    print("}")
-    print("\end{frame}")
+    print("      \end{tikzpicture}")
+    print("    }")
+    print("  \end{frame}")
     print("\end{document}")
 
 def declare_variables(n):
@@ -72,12 +72,12 @@ def declare_variables(n):
        n: int
           the total number of variables
     """
-    print("\n% variables");
-    print("\\node (v%d) at (0, %d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (1,0))
-    print("\\node[below = 0 of v%d] () {v%d};" % (1,1))
+    print("\n        % variables");
+    print("        \\node (v%d) at (0, %d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (1,0))
+    print("        \\node[below = 0 of v%d] () {v%d};" % (1,1))
     for i in range(2,n+1):
-            print("\\node[right = of v%d]  (v%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i-1,i))
-            print("\\node[below = 0 of v%d] () {v%d};" % (i,i))
+        print("        \\node[right = of v%d]  (v%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/switch}}}};" % (i-1,i))
+        print("        \\node[below = 0 of v%d] () {v%d};" % (i,i))
 
 def declare_clauses(m):
     """
@@ -88,10 +88,10 @@ def declare_clauses(m):
        m: int
           the total number of clauses
     """
-    print("\n% clauses");
-    print("\\node[above = 3 of v%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (1,1))
+    print("\n        % clauses");
+    print("        \\node[above = 3 of v%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (1,1))
     for i in range(2,m+1):
-            print("\\node[right = of c%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i-1,i))
+        print("        \\node[right = of c%d] (c%d) {{\\uncover<1>{\pgfimage[width = 1cm]{figures/lightoff.png}}}};" % (i-1,i))
 
 def handle_clause(clause,i,lit_to_clauses):
     """
@@ -107,14 +107,14 @@ def handle_clause(clause,i,lit_to_clauses):
                     side = "right"
                 else :
                     side = "left"
-                print("\\draw (c%d.south) edge[bend %s] (v%d.east);" % (i,side,l))
+                print("        \\draw (c%d.south) edge[bend %s] (v%d.east);" % (i,side,l))
             else:
                 assert l<0
                 if (-l > i + 2) :
                     side = "left" 
                 else : 
                     side = "right"
-                print("\\draw (c%d.south) edge[bend %s] (v%d.west);" % (i,side,-l))
+                print("        \\draw (c%d.south) edge[bend %s] (v%d.west);" % (i,side,-l))
             
 def handle_solution_line(line,i):
     """
@@ -122,19 +122,20 @@ def handle_solution_line(line,i):
 
     """
     satisfied_clauses = set()
+    print("\n        % solution");
     for s in line.split()[1:]:
         l = int(s)
         if (l !=0):
             satisfied_clauses.update(lit_to_clauses[dimacs2index(l)])
             if (l>0): 
-                print("\\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchon}}} ;" % (l,i))
+                print("        \\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchon}}} ;" % (l,i))
             else: 
                 assert l<0
-                print("\\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchoff}}} ;" % (-l,i))
+                print("        \\node () at (v%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/switchoff}}} ;" % (-l,i))
     for c in satisfied_clauses:
-        print("\\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lighton}}} ;" % (c,i))
+        print("        \\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lighton}}} ;" % (c,i))
     for c in set(range(1,m+1)).difference(satisfied_clauses):
-        print("\\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lightoff}}} ;" % (c,i))
+        print("        \\node () at (c%d) {\\only<%d>{\pgfimage[width = 1cm]{figures/lightoff}}} ;" % (c,i))
 
 def wait_for_solution(m,lit_to_clauses):
     """
