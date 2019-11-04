@@ -159,33 +159,31 @@ if (len(sys.argv)!=2):
     sys.exit(1)
     
 
-dimacs = open(sys.argv[1],"r")
-
-line = dimacs.readline()
-while line.startswith("c "):
+with open(sys.argv[1],"r") as dimacs:
     line = dimacs.readline()
+    while line.startswith("c "):
+        line = dimacs.readline()
 
-assert line.startswith("p cnf")
-header = line.split()
-n = int(header[2])
-m = int(header[3])
-if (n <= 5 and m <= 5) :
-    scale = 1.
-else :
-    scale = 5./max(n,m)
+    assert line.startswith("p cnf")
+    header = line.split()
+    n = int(header[2])
+    m = int(header[3])
+    if (n <= 5 and m <= 5) :
+        scale = 1.
+    else :
+        scale = 5./max(n,m)
 
-latex_header(scale)
-declare_variables(n)
-declare_clauses(m)
+    latex_header(scale)
+    declare_variables(n)
+    declare_clauses(m)
 
-lit_to_clauses = [[] for i in range(2*n+2)]
+    lit_to_clauses = [[] for i in range(2*n+2)]
 
-i=1
-for line in dimacs:
-    handle_clause(line,i,lit_to_clauses)
-    i += 1
-dimacs.close
+    i=1
+    for line in dimacs:
+        handle_clause(line,i,lit_to_clauses)
+        i += 1
 
-wait_for_solution(m,lit_to_clauses)
+    wait_for_solution(m,lit_to_clauses)
 
-latex_footer()
+    latex_footer()
